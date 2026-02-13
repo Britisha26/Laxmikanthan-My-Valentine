@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>my vaLenTine</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Poppins,sans-serif;
+}
+
+body{
+background:linear-gradient(to bottom,#0a0002,#1a0006,#3b0012,#6e001f);
+color:white;
+overflow-x:hidden;
+min-height:100vh;
+}
+
+.container{
+max-width:900px;
+margin:auto;
+padding:50px 16px;
+text-align:center;
+}
+
+.card{
+background:rgba(255,255,255,0.06);
+backdrop-filter:blur(16px);
+border-radius:18px;
+padding:20px;
+margin:18px 0;
+box-shadow:0 10px 30px rgba(0,0,0,0.45);
+}
+
+/* stars */
+
+.star{
+position:fixed;
+width:2px;
+height:2px;
+background:#fff;
+border-radius:50%;
+opacity:.7;
+animation:twinkle 1s infinite alternate;
+pointer-events:none;
+z-index:0;
+}
+
+@keyframes twinkle{
+from{opacity:.2;}
+to{opacity:1;}
+}
+
+/* hearts */
+
+.heart{
+position:fixed;
+bottom:-20px;
+animation:float 7s linear infinite;
+opacity:.5;
+color:#ff4d6d;
+pointer-events:none;
+z-index:0;
+}
+
+@keyframes float{
+0%{transform:translateY(0);}
+100%{transform:translateY(-110vh);}
+}
+
+/* puzzle layout */
+
+.game-wrapper{
+display:flex;
+justify-content:center;
+align-items:center;
+gap:14px;
+flex-wrap:nowrap;
+margin-top:20px;
+}
+
+.side{
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
+.home-slot{
+width:68px;
+height:68px;
+border:1.5px dashed rgba(255,120,140,.4);
+border-radius:12px;
+display:flex;
+justify-content:center;
+align-items:center;
+}
+
+.puzzle-board{
+display:grid;
+grid-template-columns:repeat(2,68px);
+grid-template-rows:repeat(4,68px);
+padding:10px;
+border-radius:18px;
+background:#2b1720;
+box-shadow:
+0 0 14px rgba(255,80,110,.35),
+inset 0 0 10px rgba(255,120,140,.18);
+}
+
+.puzzle-slot{
+width:68px;
+height:68px;
+outline:1.5px solid rgba(255,90,120,.4);
+}
+
+.piece{
+width:68px;
+height:68px;
+border-radius:5px;
+position:relative;
+background-image:url("couple.jpg");
+background-size:136px 272px;
+touch-action:none;
+box-shadow:0 0 5px rgba(0,0,0,.5);
+}
+
+.dragging{
+position:absolute;
+z-index:999;
+pointer-events:none;
+}
+
+/* FINAL IMAGE */
+
+.final-image{
+
+width:136px;
+height:272px;
+
+border-radius:10px;
+
+background-image:url("couple.jpg");
+background-size:cover;
+background-position:center;
+
+box-shadow:
+0 0 30px rgba(255,80,110,.5),
+0 0 60px rgba(120,0,30,.5);
+
+animation:fadeIn 1.2s ease;
+}
+
+@keyframes fadeIn{
+from{opacity:0;transform:scale(.9);}
+to{opacity:1;transform:scale(1);}
+}
+
+/* banner */
+
+.love-banner{
+position:fixed;
+left:50%;
+top:50%;
+transform:translate(-50%,-50%) scale(.7);
+font-family:'Cinzel',serif;
+font-size:42px;
+letter-spacing:3px;
+color:#ffccd5;
+padding:22px 44px;
+border-radius:14px;
+background:linear-gradient(180deg,rgba(60,0,15,.96),rgba(20,0,5,.98));
+border:1px solid rgba(255,120,140,.5);
+box-shadow:
+0 0 40px rgba(255,60,90,.6),
+0 0 90px rgba(120,0,30,.6);
+opacity:0;
+z-index:10000;
+animation:bannerReveal 3.2s forwards;
+}
+
+@keyframes bannerReveal{
+0%{opacity:0;transform:translate(-50%,-50%) scale(.4);}
+20%{opacity:1;transform:translate(-50%,-50%) scale(1.08);}
+40%{transform:translate(-50%,-50%) scale(1);}
+85%{opacity:1;}
+100%{opacity:0;transform:translate(-50%,-65%) scale(.95);}
+}
+
+.explosion{
+position:fixed;
+pointer-events:none;
+z-index:9999;
+}
+
+@keyframes explode{
+0%{transform:translate(0,0) scale(1);opacity:1;}
+100%{transform:translate(var(--x),var(--y)) scale(.7);opacity:0;}
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>❤️ Happy Valentine's Day Laxmikanth ❤️</h1>
+<p>A darker little universe made just for us ✨</p>
+
+<div class="card">
+<h2>🌹 A Note For You</h2>
+<p>
+Being with you feels like home and adventure at the same time.
+Every laugh, every late-night talk,
+every quiet moment — they all mean more because it's you.
+</p>
+</div>
+
+<div class="card">
+<h2>⏳ Our Journey</h2>
+<p id="counter"></p>
+</div>
+
+<div class="card">
+
+<h2>🧩 Build Our Love ❤️</h2>
+
+<div class="game-wrapper" id="wrapper">
+
+<div class="side" id="leftSide">
+<div class="home-slot" id="home1"></div>
+<div class="home-slot" id="home2"></div>
+<div class="home-slot" id="home3"></div>
+<div class="home-slot" id="home4"></div>
+</div>
+
+<div class="puzzle-board" id="board"></div>
+
+<div class="side" id="rightSide">
+<div class="home-slot" id="home5"></div>
+<div class="home-slot" id="home6"></div>
+<div class="home-slot" id="home7"></div>
+<div class="home-slot" id="home8"></div>
+</div>
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+/* counter */
+const startDate=new Date("2025-12-05");
+function updateCounter(){
+const now=new Date();
+const diff=now-startDate;
+document.getElementById("counter").innerText=
+Math.floor(diff/(1000*60*60*24))+" days of us ❤️";
+}
+updateCounter();
+
+/* stars */
+for(let i=0;i<120;i++){
+let s=document.createElement("div");
+s.className="star";
+s.style.left=Math.random()*100+"vw";
+s.style.top=Math.random()*100+"vh";
+document.body.appendChild(s);
+}
+
+/* hearts */
+setInterval(()=>{
+let h=document.createElement("div");
+h.className="heart";
+h.innerHTML="❤";
+h.style.left=Math.random()*100+"vw";
+document.body.appendChild(h);
+setTimeout(()=>h.remove(),7000);
+},600);
+
+/* puzzle */
+
+const board=document.getElementById("board");
+
+for(let i=1;i<=8;i++){
+let slot=document.createElement("div");
+slot.className="puzzle-slot";
+slot.dataset.slot=i;
+board.appendChild(slot);
+}
+
+function shuffle(a){
+for(let i=a.length-1;i>0;i--){
+let j=Math.floor(Math.random()*(i+1));
+[a[i],a[j]]=[a[j],a[i]];
+}
+return a;
+}
+
+let homes=shuffle(["home1","home2","home3","home4","home5","home6","home7","home8"]);
+let completed=false;
+
+for(let i=0;i<8;i++){
+
+let piece=document.createElement("div");
+piece.className="piece";
+piece.dataset.correct=i+1;
+piece.dataset.home=homes[i];
+
+let row=Math.floor(i/2);
+let col=i%2;
+
+piece.style.backgroundPosition=`${-col*68}px ${-row*68}px`;
+
+document.getElementById(homes[i]).appendChild(piece);
+
+addDrag(piece);
+}
+
+function completePuzzle(){
+
+document.getElementById("leftSide").style.display="none";
+document.getElementById("rightSide").style.display="none";
+
+board.innerHTML="";
+
+let img=document.createElement("div");
+img.className="final-image";
+
+board.appendChild(img);
+
+}
+
+function explosionConfetti(){
+
+let banner=document.createElement("div");
+banner.className="love-banner";
+banner.innerText="I Love You";
+document.body.appendChild(banner);
+setTimeout(()=>banner.remove(),3200);
+
+completePuzzle();
+
+}
+
+function checkWin(){
+
+if(completed)return;
+
+let filled=[...document.querySelectorAll(".puzzle-slot")]
+.every(s=>s.children.length>0);
+
+if(filled){
+
+completed=true;
+
+setTimeout(explosionConfetti,400);
+
+}
+}
+
+/* drag engine unchanged */
+
+function addDrag(el){
+
+let offsetX=0,offsetY=0;
+
+el.addEventListener("touchstart",start,{passive:false});
+el.addEventListener("mousedown",start);
+
+function start(e){
+
+e.preventDefault();
+
+const t=e.touches?e.touches[0]:e;
+const rect=el.getBoundingClientRect();
+
+offsetX=t.clientX-rect.left;
+offsetY=t.clientY-rect.top;
+
+el.classList.add("dragging");
+
+el.style.left=rect.left+window.scrollX+"px";
+el.style.top=rect.top+window.scrollY+"px";
+
+document.body.appendChild(el);
+
+document.addEventListener("touchmove",move,{passive:false});
+document.addEventListener("mousemove",move);
+document.addEventListener("touchend",end);
+document.addEventListener("mouseup",end);
+}
+
+function move(e){
+
+e.preventDefault();
+
+const t=e.touches?e.touches[0]:e;
+
+el.style.left=t.clientX-offsetX+window.scrollX+"px";
+el.style.top=t.clientY-offsetY+window.scrollY+"px";
+}
+
+function end(e){
+
+document.removeEventListener("touchmove",move);
+document.removeEventListener("mousemove",move);
+
+let snapped=false;
+const t=e.changedTouches?e.changedTouches[0]:e;
+
+document.querySelectorAll(".puzzle-slot").forEach(slot=>{
+
+const r=slot.getBoundingClientRect();
+const cx=r.left+r.width/2;
+const cy=r.top+r.height/2;
+
+if(Math.abs(t.clientX-cx)<50&&Math.abs(t.clientY-cy)<50){
+
+if(el.dataset.correct===slot.dataset.slot){
+
+slot.appendChild(el);
+snapped=true;
+
+}
+}
+});
+
+if(!snapped){
+document.getElementById(el.dataset.home).appendChild(el);
+}
+
+el.classList.remove("dragging");
+el.style.left="";
+el.style.top="";
+
+checkWin();
+
+document.removeEventListener("touchend",end);
+document.removeEventListener("mouseup",end);
+}
+
+}
+
+</script>
+
+</body>
+</html>
