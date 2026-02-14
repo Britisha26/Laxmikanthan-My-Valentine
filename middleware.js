@@ -2,7 +2,7 @@ export default function middleware(request) {
 
   const authHeader = request.headers.get('authorization');
 
-  const PASSWORD = 'laxmiandme';
+  const PASSWORD = 'LkT@926!';
 
   if (authHeader) {
 
